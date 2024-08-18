@@ -26,4 +26,5 @@ This plugin is free but if you install and find it useful then a donation to sup
 ## Version history ##
 
     version         Description
+    1.1.0+20240818  Generate DKIM header for the From domain
     1.0.0+20220330  First release

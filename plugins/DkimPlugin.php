@@ -96,33 +96,24 @@ class DkimPlugin extends phplistPlugin
     public function messageHeaders($mail)
     {
         static $first = true;
-        static $DKIM_domain = '';
-        static $DKIM_selector = '';
-        static $DKIM_private_string = '';
+        static $domains = [];
 
         if ($first) {
             $first = false;
 
             if ('' != ($settings = trim(getConfig('dkim_from_domains_settings')))) {
-                $fromDomain = substr(strrchr($mail->From, '@'), 1);
-
                 foreach (preg_split('|\R{2,}|', $settings) as $fields) {
                     list($domain, $selector, $privateKey) = preg_split('/\R/', $fields, 3);
-
-                    if ($domain == $fromDomain) {
-                        $DKIM_domain = $domain;
-                        $DKIM_selector = $selector;
-                        $DKIM_private_string = $privateKey;
-                        break;
-                    }
+                    $domains[$domain] = [$selector, $privateKey];
                 }
             }
         }
+        $fromDomain = substr(strrchr($mail->From, '@'), 1);
 
-        if ($DKIM_domain != '') {
-            $mail->DKIM_domain = $DKIM_domain;
-            $mail->DKIM_selector = $DKIM_selector;
-            $mail->DKIM_private_string = $DKIM_private_string;
+        if (isset($domains[$fromDomain])) {
+            $mail->DKIM_domain = $fromDomain;
+            $mail->DKIM_selector = $domains[$fromDomain][0];
+            $mail->DKIM_private_string = $domains[$fromDomain][1];
             $mail->DKIM_copyHeaderFields = false;
         } else {
             $mail->DKIM_domain = getConfig('dkim_domain');
