@@ -32,14 +32,14 @@ class DkimPlugin extends phplistPlugin
             'value' => '',
             'description' => 'DKIM domain',
             'type' => 'text',
-            'allowempty' => false,
+            'allowempty' => true,
             'category' => 'DKIM',
             ],
         'dkim_selector' => [
             'value' => '',
             'description' => 'DKIM selector',
             'type' => 'text',
-            'allowempty' => false,
+            'allowempty' => true,
             'category' => 'DKIM',
             ],
         'dkim_identity' => [
@@ -77,6 +77,13 @@ class DkimPlugin extends phplistPlugin
             'allowempty' => true,
             'category' => 'DKIM',
             ],
+        'dkim_from_domains_settings' => [
+            'value' => '',
+            'description' => 'Match the From address against these domains',
+            'type' => 'textarea',
+            'allowempty' => true,
+            'category' => 'DKIM',
+            ],
         ];
 
     public function __construct()
@@ -88,13 +95,44 @@ class DkimPlugin extends phplistPlugin
 
     public function messageHeaders($mail)
     {
-        $mail->DKIM_domain = getConfig('dkim_domain');
-        $mail->DKIM_selector = getConfig('dkim_selector');
-        $mail->DKIM_identity = getConfig('dkim_identity');
-        $mail->DKIM_private_string = getConfig('dkim_private_key');
-        $mail->DKIM_private = getConfig('dkim_private_key_path');
-        $mail->DKIM_passphrase = getConfig('dkim_passphrase');
-        $mail->DKIM_copyHeaderFields = getConfig('dkim_copy_header_fields');
+        static $first = true;
+        static $DKIM_domain = '';
+        static $DKIM_selector = '';
+        static $DKIM_private_string = '';
+
+        if ($first) {
+            $first = false;
+
+            if ('' != ($settings = trim(getConfig('dkim_from_domains_settings')))) {
+                $fromDomain = substr(strrchr($mail->From, '@'), 1);
+
+                foreach (preg_split('|\R{2,}|', $settings) as $fields) {
+                    list($domain, $selector, $privateKey) = preg_split('/\R/', $fields, 3);
+
+                    if ($domain == $fromDomain) {
+                        $DKIM_domain = $domain;
+                        $DKIM_selector = $selector;
+                        $DKIM_private_string = $privateKey;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if ($DKIM_domain != '') {
+            $mail->DKIM_domain = $DKIM_domain;
+            $mail->DKIM_selector = $DKIM_selector;
+            $mail->DKIM_private_string = $DKIM_private_string;
+            $mail->DKIM_copyHeaderFields = false;
+        } else {
+            $mail->DKIM_domain = getConfig('dkim_domain');
+            $mail->DKIM_selector = getConfig('dkim_selector');
+            $mail->DKIM_identity = getConfig('dkim_identity');
+            $mail->DKIM_private_string = getConfig('dkim_private_key');
+            $mail->DKIM_private = getConfig('dkim_private_key_path');
+            $mail->DKIM_passphrase = getConfig('dkim_passphrase');
+            $mail->DKIM_copyHeaderFields = getConfig('dkim_copy_header_fields');
+        }
 
         return [];
     }
