@@ -34,57 +34,57 @@ class DkimPlugin extends phplistPlugin
             'type' => 'text',
             'allowempty' => true,
             'category' => 'DKIM',
-            ],
+        ],
         'dkim_selector' => [
             'value' => '',
             'description' => 'DKIM selector',
             'type' => 'text',
             'allowempty' => true,
             'category' => 'DKIM',
-            ],
+        ],
         'dkim_identity' => [
             'value' => '',
             'description' => 'DKIM identity (optional)',
             'type' => 'text',
             'allowempty' => true,
             'category' => 'DKIM',
-            ],
+        ],
         'dkim_private_key' => [
             'value' => '',
             'description' => 'DKIM private key (if set, takes precedence over private key file)',
             'type' => 'textarea',
             'allowempty' => true,
             'category' => 'DKIM',
-            ],
+        ],
         'dkim_private_key_path' => [
             'value' => '',
             'description' => 'Path to DKIM private key file',
             'type' => 'text',
             'allowempty' => true,
             'category' => 'DKIM',
-            ],
+        ],
         'dkim_passphrase' => [
             'value' => '',
             'description' => 'Passphrase for DKIM private key file',
             'type' => 'text',
             'allowempty' => true,
             'category' => 'DKIM',
-            ],
+        ],
         'dkim_copy_header_fields' => [
             'value' => false,
             'description' => 'Include the header field values for diagnostic use',
             'type' => 'boolean',
             'allowempty' => true,
             'category' => 'DKIM',
-            ],
+        ],
         'dkim_from_domains_settings' => [
             'value' => '',
             'description' => 'Match the From address against these domains',
             'type' => 'textarea',
             'allowempty' => true,
             'category' => 'DKIM',
-            ],
-        ];
+        ],
+    ];
 
     public function __construct()
     {
