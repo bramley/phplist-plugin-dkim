@@ -125,6 +125,14 @@ class DkimPlugin extends phplistPlugin
             $mail->DKIM_copyHeaderFields = getConfig('dkim_copy_header_fields');
         }
 
+        $mail->DKIM_extraHeaders = [
+            'List-Help',
+            'List-Owner',
+            'List-Subscribe',
+            'List-Unsubscribe',
+            'List-Unsubscribe-Post',
+        ];
+
         return [];
     }
 }
